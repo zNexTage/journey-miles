@@ -7,10 +7,20 @@ services:
     image: api
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: API/Dockerfile
     ports:
       - 5249:5249
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+    env_file:
+      - .env     
+  db:
+    image: mysql:8.0.33
+    restart: always
+    env_file:
+      - .env 
+    expose:
+      - 3307
     volumes:
-      - ~/.vsdbg:/remote_debugger:rw
+      - my-db:/var/lib/mysql
+
+volumes:
+  my-db:
