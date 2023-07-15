@@ -1,7 +1,7 @@
 using System;
 using API.DTO.Deposition;
+using API.Models;
 using API.Service;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -19,11 +19,10 @@ public class DepositionController : ControllerBase
 
     [HttpPost]
     public IActionResult Create([FromForm] CreateDepositionDto depositionDto, IFormFile photo)
-    {        
+    {
         var deposition = _depositionService.Register(depositionDto, photo);
 
         return CreatedAtAction(nameof(GetById),
-        nameof(DepositionController),
         new { id = deposition.Id },
         deposition
         );
@@ -38,7 +37,27 @@ public class DepositionController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
-        return Ok();
+        try
+        {
+            var deposition = _depositionService.Get(id);
+
+            var controllerName = nameof(DepositionController).Replace("Controller", string.Empty);
+
+            var photoUrl = Url.Action(
+                nameof(GetPhoto),
+                controllerName,
+                new { id = deposition.Id },
+                Request.Scheme
+            );
+
+            deposition.Photo = photoUrl;
+
+            return Ok(deposition);
+        }
+        catch (Deposition.DoesNotExists)
+        {
+            return NotFound("Imagem não localizada");
+        }
     }
 
     [HttpPut]
@@ -59,16 +78,20 @@ public class DepositionController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("photo/{id}")]
-    public IActionResult GetPhoto(int id){
-        var deposition = _depositionService.Get(id);
+    [HttpGet("foto/{id}")]
+    public IActionResult GetPhoto(int id)
+    {
+        try
+        {
+            var deposition = _depositionService.Get(id);
 
-        if(deposition == null){
+            var photo = System.IO.File.OpenRead(deposition.Photo);
+
+            return File(photo, "image/jpg");
+        }
+        catch (Deposition.DoesNotExists)
+        {
             return NotFound("Imagem não localizada");
         }
-
-        var photo = System.IO.File.OpenRead(deposition.Photo);
-        
-        return File(photo, "image/jpg");
     }
 }
