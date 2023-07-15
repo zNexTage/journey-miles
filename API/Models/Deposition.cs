@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Models;
 
-public class Testimonial
+public class Deposition
 {
     [Key]
     [Required]
