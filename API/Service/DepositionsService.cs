@@ -12,7 +12,10 @@ public class DepositionService
     private IMapper _mapper;
     private FileManager _fileManager;
 
-    public DepositionService(AppDbContext appDbContext, IMapper mapper, IWebHostEnvironment environment)
+    public DepositionService(AppDbContext appDbContext, 
+    IMapper mapper, 
+    IWebHostEnvironment environment 
+    )
     {
         _appDbContext = appDbContext;
         _mapper = mapper;
@@ -26,11 +29,13 @@ public class DepositionService
         return _mapper.Map<List<Deposition>>(depositions);
     }
 
-    public Deposition Get(int id)
+    public ReadDepositionDto Get(int id)
     {
-        var deposition = _appDbContext.Depositions.Where(depo => depo.Id == id);
+        var deposition = _appDbContext.Depositions.FirstOrDefault(depo => depo.Id == id) ?? throw new Deposition.DoesNotExists($"Depoimento {id} não foi localizado");       
+        
+        var dto = _mapper.Map<ReadDepositionDto>(deposition);
 
-        return _mapper.Map<Deposition>(deposition);
+        return dto;
     }
 
     public Deposition Register(CreateDepositionDto depositionDto, IFormFile photo)
