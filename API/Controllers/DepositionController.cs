@@ -52,4 +52,23 @@ public class DepositionController : ControllerBase
     {
         return NoContent();
     }
+
+    /// <summary>
+    /// Retorna a imagem de um depoimento;
+    /// Ref: https://stackoverflow.com/questions/40794275/return-jpeg-image-from-asp-net-core-webapi
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("photo/{id}")]
+    public IActionResult GetPhoto(int id){
+        var deposition = _depositionService.Get(id);
+
+        if(deposition == null){
+            return NotFound("Imagem não localizada");
+        }
+
+        var photo = System.IO.File.OpenRead(deposition.Photo);
+        
+        return File(photo, "image/jpg");
+    }
 }
