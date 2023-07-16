@@ -40,7 +40,7 @@ public class DepositionService
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    private string GetDepositionPhotoUrl(int id)
+    private string GetDepositionPhotoEndpointUrl(int id)
     {
         var controllerName = nameof(DepositionController).Replace("Controller", string.Empty);
         var methodName = "GetPhoto";        
@@ -62,7 +62,7 @@ public class DepositionService
         var depositionsDto = _mapper.Map<List<ReadDepositionDto>>(depositions);
 
         foreach(var deposition in depositionsDto){
-            deposition.Photo = GetDepositionPhotoUrl(deposition.Id);
+            deposition.Photo = GetDepositionPhotoEndpointUrl(deposition.Id);
         }
 
         return depositionsDto;
@@ -74,12 +74,12 @@ public class DepositionService
 
         var dto = _mapper.Map<ReadDepositionDto>(deposition);
 
-        dto.Photo = GetDepositionPhotoUrl(dto.Id);
+        dto.Photo = GetDepositionPhotoEndpointUrl(dto.Id);
 
         return dto;
     }
 
-    public Deposition Register(CreateDepositionDto depositionDto, IFormFile photo)
+    public ReadDepositionDto Register(CreateDepositionDto depositionDto, IFormFile photo)
     {
         var fileExtesion = Path.GetExtension(photo.FileName);
         //Salva a foto no diretório e obtém o caminho.
@@ -93,6 +93,20 @@ public class DepositionService
         _appDbContext.Depositions.Add(deposition);
         _appDbContext.SaveChanges();
 
-        return deposition;
+        return _mapper.Map<ReadDepositionDto>(deposition);
+    }
+
+    /// <summary>
+    /// Obtem o caminho da foto do depoimento salvo no diretório.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <exception cref="Deposition.DoesNotExists"></exception>
+    public string GetPhotoDirectory(int id){
+        var deposition = _appDbContext.Depositions
+        .FirstOrDefault(depo => depo.Id == id)
+        ?? throw new Deposition.DoesNotExists($"Depoimento {id} não foi localizado");
+
+        return deposition.Photo;
     }
 }
