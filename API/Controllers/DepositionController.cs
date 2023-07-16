@@ -31,15 +31,16 @@ public class DepositionController : ControllerBase
     [HttpGet]
     public IActionResult GetAll()
     {
-        return Ok();
+        return Ok(
+            _depositionService.GetAll()
+        );
     }
 
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
         try
-        {
-            
+        {            
             var deposition = _depositionService.Get(id);
 
             return Ok(deposition);
@@ -74,7 +75,7 @@ public class DepositionController : ControllerBase
         try
         {
             var deposition = _depositionService.Get(id);
-
+            //TODO: E se a foto não existir?
             var photo = System.IO.File.OpenRead(deposition.Photo);
 
             return File(photo, "image/jpg");

@@ -55,11 +55,17 @@ public class DepositionService
         return url;
     }
 
-    public IEnumerable<Deposition> GetAll()
+    public IEnumerable<ReadDepositionDto> GetAll()
     {
         var depositions = _appDbContext.Depositions.ToList();
 
-        return _mapper.Map<List<Deposition>>(depositions);
+        var depositionsDto = _mapper.Map<List<ReadDepositionDto>>(depositions);
+
+        foreach(var deposition in depositionsDto){
+            deposition.Photo = GetDepositionPhotoUrl(deposition.Id);
+        }
+
+        return depositionsDto;
     }
 
     public ReadDepositionDto Get(int id)
