@@ -32,4 +32,10 @@ public class FileManager
 
         return fullpath;
     }
+
+    public void Remove(string path){
+        if(File.Exists(path)){
+            File.Delete(path);
+        }
+    }
 }

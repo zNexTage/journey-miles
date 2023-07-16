@@ -43,7 +43,7 @@ public class DepositionService
     private string GetDepositionPhotoEndpointUrl(int id)
     {
         var controllerName = nameof(DepositionController).Replace("Controller", string.Empty);
-        var methodName = "GetPhoto";        
+        var methodName = "GetPhoto";
 
         var url = _urlHelper.Action(
                 methodName,
@@ -61,16 +61,33 @@ public class DepositionService
 
         var depositionsDto = _mapper.Map<List<ReadDepositionDto>>(depositions);
 
-        foreach(var deposition in depositionsDto){
+        foreach (var deposition in depositionsDto)
+        {
             deposition.Photo = GetDepositionPhotoEndpointUrl(deposition.Id);
         }
 
         return depositionsDto;
     }
 
+    public string GetPhotoFilename(string fileExtesion)
+    {
+        return Guid.NewGuid().ToString() + fileExtesion;
+    }
+
+    public string SavePhoto(IFormFile photo){
+        var fileExtesion = Path.GetExtension(photo.FileName);
+        //Salva a foto no diretório e obtém o caminho.
+        var fileName = GetPhotoFilename(fileExtesion);
+
+        var fullPath = _fileManager.SaveFile(fileName, photo);
+
+        return fullPath;
+    }
+
     public ReadDepositionDto Get(int id)
     {
-        var deposition = _appDbContext.Depositions.FirstOrDefault(depo => depo.Id == id) ?? throw new Deposition.DoesNotExists($"Depoimento {id} não foi localizado");
+        var deposition = _appDbContext.Depositions.FirstOrDefault(depo => depo.Id == id) 
+        ?? throw new Deposition.DoesNotExists($"Depoimento {id} não foi localizado");
 
         var dto = _mapper.Map<ReadDepositionDto>(deposition);
 
@@ -81,11 +98,7 @@ public class DepositionService
 
     public ReadDepositionDto Register(CreateDepositionDto depositionDto, IFormFile photo)
     {
-        var fileExtesion = Path.GetExtension(photo.FileName);
-        //Salva a foto no diretório e obtém o caminho.
-        var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtesion;
-
-        var fullPath = _fileManager.SaveFile(fileName, photo);
+        var fullPath = SavePhoto(photo);
 
         var deposition = _mapper.Map<Deposition>(depositionDto);
         deposition.Photo = fullPath;
@@ -102,11 +115,39 @@ public class DepositionService
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="Deposition.DoesNotExists"></exception>
-    public string GetPhotoDirectory(int id){
+    public string GetPhotoDirectory(int id)
+    {
         var deposition = _appDbContext.Depositions
         .FirstOrDefault(depo => depo.Id == id)
         ?? throw new Deposition.DoesNotExists($"Depoimento {id} não foi localizado");
 
         return deposition.Photo;
+    }
+
+    public ReadDepositionDto Update(int id, UpdateDepositionDto depositionDto, IFormFile? photo)
+    {
+        var deposition = _appDbContext.Depositions.FirstOrDefault(depo => depo.Id == id);
+
+        if(deposition == null){
+            throw new Deposition.DoesNotExists($"Depoimento de id {id} não existe");
+        }
+
+        _mapper.Map(depositionDto, deposition);
+
+        if (photo != null)
+        {
+            //Remove a imagem antiga
+            _fileManager.Remove(deposition.Photo);
+
+            // Salva a imagem nova
+            var fullPath = SavePhoto(photo);
+            deposition.Photo = fullPath;    
+        }
+
+        _appDbContext.SaveChanges();
+
+        deposition.Photo = GetDepositionPhotoEndpointUrl(deposition.Id);
+
+        return _mapper.Map<ReadDepositionDto>(deposition);
     }
 }

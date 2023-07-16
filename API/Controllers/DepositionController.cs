@@ -51,10 +51,18 @@ public class DepositionController : ControllerBase
         }
     }
 
-    [HttpPut]
-    public IActionResult Update(int id)
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromForm] UpdateDepositionDto depositionDto, IFormFile? photo)
     {
-        return Ok();
+        try{
+            var deposition = _depositionService.Update(id, depositionDto, photo);
+
+            return Ok(deposition);
+        }
+        catch(Deposition.DoesNotExists err){
+            return NotFound($"Depoimento {id} não localizado");
+        }
+
     }
 
     [HttpDelete]

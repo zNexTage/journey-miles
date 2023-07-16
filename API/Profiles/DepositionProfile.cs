@@ -13,5 +13,8 @@ public class DepositionProfile : Profile
 
         CreateMap<CreateDepositionDto, Deposition>()
         .ForMember(dto => dto.Photo, opt => opt.Ignore());
+
+        CreateMap<UpdateDepositionDto, Deposition>()
+        .ForMember(dto => dto.Photo, opt => opt.Ignore());
     }
 }
