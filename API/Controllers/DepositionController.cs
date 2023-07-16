@@ -40,7 +40,7 @@ public class DepositionController : ControllerBase
     public IActionResult GetById(int id)
     {
         try
-        {            
+        {
             var deposition = _depositionService.Get(id);
 
             return Ok(deposition);
@@ -73,16 +73,24 @@ public class DepositionController : ControllerBase
     public IActionResult GetPhoto(int id)
     {
         try
-        {
-            var deposition = _depositionService.Get(id);
-            //TODO: E se a foto não existir?
-            var photo = System.IO.File.OpenRead(deposition.Photo);
+            {
+                var deposition = _depositionService.Get(id);
+                
+                var photo = System.IO.File.OpenRead(deposition.Photo);
 
-            return File(photo, "image/jpg");
-        }
-        catch (Deposition.DoesNotExists)
-        {
-            return NotFound("Imagem não localizada");
-        }
+                return File(photo, "image/jpg");
+            }
+            catch (Exception err)
+            {
+                if (err is FileNotFoundException || 
+                err is DirectoryNotFoundException || 
+                err is Deposition.DoesNotExists)
+                {
+                    return NotFound("Imagem não localizada");
+                }
+
+                return StatusCode(500,
+                new { error = "Ocorreu um erro ao obter a imagem do depoimento" });
+            }
     }
 }
