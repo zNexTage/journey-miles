@@ -39,18 +39,8 @@ public class DepositionController : ControllerBase
     {
         try
         {
+            
             var deposition = _depositionService.Get(id);
-
-            var controllerName = nameof(DepositionController).Replace("Controller", string.Empty);
-
-            var photoUrl = Url.Action(
-                nameof(GetPhoto),
-                controllerName,
-                new { id = deposition.Id },
-                Request.Scheme
-            );
-
-            deposition.Photo = photoUrl;
 
             return Ok(deposition);
         }

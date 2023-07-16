@@ -1,6 +1,7 @@
 using API;
 using API.Service;
 using API.Utils;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,12 @@ builder.Services.AddDbContext<AppDbContext>();
 // Injeção de dependência.
 builder.Services.AddScoped<DepositionService>();
 builder.Services.AddScoped<FileManager>();
+
+// Permite acessar UrlHelper nos services;
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
