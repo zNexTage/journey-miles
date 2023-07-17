@@ -150,4 +150,17 @@ public class DepositionService
 
         return _mapper.Map<ReadDepositionDto>(deposition);
     }
+
+    public void Delete(int id)
+    {
+        var deposition = _appDbContext.Depositions.FirstOrDefault(depo => depo.Id == id);
+
+        if(deposition == null){
+            throw new Deposition.DoesNotExists($"Depoimento de id {id} não existe");
+        }
+
+        _appDbContext.Depositions.Remove(deposition);
+
+        _appDbContext.SaveChanges();
+    }
 }

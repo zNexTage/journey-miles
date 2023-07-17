@@ -47,7 +47,7 @@ public class DepositionController : ControllerBase
         }
         catch (Deposition.DoesNotExists)
         {
-            return NotFound("Imagem não localizada");
+            return NotFound($"Depoimento {id} não localizado");
         }
     }
 
@@ -65,10 +65,17 @@ public class DepositionController : ControllerBase
 
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        return NoContent();
+        try{
+            _depositionService.Delete(id);
+
+            return NoContent();
+        }
+        catch(Deposition.DoesNotExists err){
+            return NotFound($"Depoimento {id} não localizado");
+        }
     }
 
     /// <summary>
