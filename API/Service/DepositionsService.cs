@@ -69,7 +69,7 @@ public class DepositionService
         return depositionsDto;
     }
 
-    public string GetPhotoFilename(string fileExtesion)
+    private string GetPhotoFilename(string fileExtesion)
     {
         return Guid.NewGuid().ToString() + fileExtesion;
     }
