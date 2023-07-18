@@ -36,6 +36,15 @@ public class DepositionController : ControllerBase
         );
     }
 
+    /// <summary>
+    /// Obtém três depoimentos aleatóriamente
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("home/")]
+    public IActionResult GetRandom(){
+        return Ok(_depositionService.GetRandom());
+    }
+
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {

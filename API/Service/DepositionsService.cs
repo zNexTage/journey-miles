@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Service;
 
@@ -67,6 +68,17 @@ public class DepositionService
         }
 
         return depositionsDto;
+    }
+
+    /// <summary>
+    /// Obtém três depoimentos aleatórios
+    /// TODO: A quantidade de itens deveria ser parametrizado?
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<ReadDepositionDto> GetRandom(){
+        var depositions = _appDbContext.Depositions.OrderBy(r => EF.Functions.Random()).Take(3);
+
+        return _mapper.Map<List<ReadDepositionDto>>(depositions);
     }
 
     private string GetPhotoFilename(string fileExtesion)
