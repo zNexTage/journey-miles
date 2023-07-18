@@ -22,6 +22,11 @@ builder.Services.AddScoped<FileManager>();
 // Permite acessar UrlHelper nos services;
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
+//Configuração do CORS
+// Ref: https://www.infoworld.com/article/3327562/how-to-enable-cors-in-aspnet-core.html
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAllOrigins", builder => builder.AllowAnyOrigin());
+});
 
 builder.Services.AddHttpContextAccessor();
 
