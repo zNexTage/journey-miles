@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Deposition> Depositions { get; set; }
+    public DbSet<Destination> Destinations { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
