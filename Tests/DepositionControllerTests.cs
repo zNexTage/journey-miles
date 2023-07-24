@@ -112,6 +112,23 @@ public class DepositionControllerTests
     }
 
     [Fact]
+    public void Get_RandomDeposition(){
+        //Arrage
+        Mock<IDepositionService> mockService = new();
+        mockService.Setup(service => service.GetRandom())
+        .Returns(this.GetTestDepositions());
+
+        var controller = new DepositionController(mockService.Object);
+
+        //Act
+        var result = (OkObjectResult)controller.GetRandom();
+
+        //Assert
+        Assert.True(result.StatusCode == 200);
+        Assert.IsType<List<ReadDepositionDto>>(result.Value);
+    }    
+
+    [Fact]
     public void Post_CreateDeposition(){
         //Assert
         CreateDepositionDto depositionDto = new CreateDepositionDto(){
