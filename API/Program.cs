@@ -1,5 +1,6 @@
 using API;
 using API.Service;
+using API.Service.Providers;
 using API.Utils;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>();
 
 // Injeção de dependência.
-builder.Services.AddScoped<DepositionService>();
+// builder.Services.AddScoped<DepositionService>();
+builder.Services.AddScoped<IDepositionService, DepositionService>();
 builder.Services.AddScoped<FileManager>();
 
 // Permite acessar UrlHelper nos services;
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
 //Configuração do CORS
 // Ref: https://www.infoworld.com/article/3327562/how-to-enable-cors-in-aspnet-core.html
 builder.Services.AddCors(options => {

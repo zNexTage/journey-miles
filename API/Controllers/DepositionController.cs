@@ -2,6 +2,7 @@ using System;
 using API.DTO.Deposition;
 using API.Models;
 using API.Service;
+using API.Service.Providers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -10,9 +11,9 @@ namespace API.Controllers;
 [ApiController]
 public class DepositionController : ControllerBase
 {
-    private DepositionService _depositionService;
+    private IDepositionService _depositionService;
 
-    public DepositionController(DepositionService depositionService)
+    public DepositionController(IDepositionService depositionService)
     {
         _depositionService = depositionService;
     }

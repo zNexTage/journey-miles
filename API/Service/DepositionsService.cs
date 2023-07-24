@@ -2,6 +2,7 @@ using System;
 using API.Controllers;
 using API.DTO.Deposition;
 using API.Models;
+using API.Service.Providers;
 using API.Utils;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Service;
 
-public class DepositionService
+public class DepositionService : IDepositionService
 {
     private AppDbContext _appDbContext;
     private IMapper _mapper;
