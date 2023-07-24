@@ -477,3 +477,6 @@ $RECYCLE.BIN/
 *.lnk
 
 .env
+
+# Não será versionado as imagens da aplicação.
+media/
