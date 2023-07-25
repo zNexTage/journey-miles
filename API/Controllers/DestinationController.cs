@@ -2,6 +2,7 @@ using System;
 using API.DTO.Destination;
 using API.Models;
 using API.Service.Providers;
+using API.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -10,10 +11,13 @@ namespace API.Controllers;
 [ApiController]
 public class DestinationController : ControllerBase
 {
-    private readonly IDestinationService _destinationService;   
+    private readonly IDestinationService _destinationService;  
+    private readonly FileManager _fileManager; 
+    private readonly IWebHostEnvironment _env;
 
-    public DestinationController(IDestinationService destinationService){
+    public DestinationController(IDestinationService destinationService, IWebHostEnvironment webHostEnvironment){
         _destinationService = destinationService;
+        _fileManager = new FileManager(webHostEnvironment);
     }
 
     [HttpGet]
@@ -41,6 +45,37 @@ public class DestinationController : ControllerBase
             new { id = destination.Id },
             destination
         );
+    }
+
+    /// <summary>
+    /// Retorna a imagem de um destino;
+    /// Ref: https://stackoverflow.com/questions/40794275/return-jpeg-image-from-asp-net-core-webapi
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("foto/{id}")]
+    public IActionResult GetPhoto(int id)
+    {
+        try
+            {
+                var photoPath = _destinationService.GetPhotoDirectory(id);                
+                
+                var photo = _fileManager.GetPhoto(photoPath);
+
+                return File(photo, "image/jpg");
+            }
+            catch (Exception err)
+            {
+                if (err is FileNotFoundException || 
+                err is DirectoryNotFoundException || 
+                err is Destination.DoesNotExists)
+                {
+                    return NotFound("Imagem não localizada");
+                }
+
+                return StatusCode(500,
+                new { error = "Ocorreu um erro ao obter a imagem do destino" });
+            }
     }
 
     
