@@ -58,18 +58,14 @@ public class DestinationService : IDestinationService
         return url;
     }
 
-    public void Delete(int id)
-    {
-        throw new NotImplementedException();
-    }
-
     public IEnumerable<ReadDestinationDto> GetAll()
     {
         var destinations = _appDbContext.Destinations.ToList();
 
         var depositionsDto = _mapper.Map<List<ReadDestinationDto>>(destinations);
 
-        depositionsDto.ForEach(dto => {
+        depositionsDto.ForEach(dto =>
+        {
             // we will use the endpoint to serve the photo
             dto.Photo = this.GetDestinationPhotoEndpointUrl(dto.Id);
         });
@@ -77,19 +73,17 @@ public class DestinationService : IDestinationService
         return depositionsDto;
     }
 
-
-
     public ReadDestinationDto GetById(int id)
     {
         var destination = _appDbContext.Destinations.FirstOrDefault(destination => destination.Id == id)
-        ?? throw new Destination.DoesNotExists($"Depoimento {id} não foi localizado");
+        ?? throw new Destination.DoesNotExists($"Destino {id} não foi localizado");
 
         var destinationDto = _mapper.Map<ReadDestinationDto>(destination);
 
         destinationDto.Photo = this.GetDestinationPhotoEndpointUrl(id);
 
         return destinationDto;
-    }    
+    }
 
     /// <summary>
     /// Obtém o caminho da foto no diretório
@@ -97,9 +91,10 @@ public class DestinationService : IDestinationService
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="Destination.DoesNotExists"></exception>
-    public string GetPhotoDirectory(int id){
+    public string GetPhotoDirectory(int id)
+    {
         var destination = _appDbContext.Destinations.FirstOrDefault(destination => destination.Id == id)
-        ?? throw new Destination.DoesNotExists($"Depoimento {id} não foi localizado");
+        ?? throw new Destination.DoesNotExists($"Destino {id} não foi localizado");
 
         return destination.Photo;
     }
@@ -112,31 +107,44 @@ public class DestinationService : IDestinationService
 
         _appDbContext.Destinations.Add(destination);
 
-        _appDbContext.SaveChanges();        
+        _appDbContext.SaveChanges();
 
         return _mapper.Map<ReadDestinationDto>(destination);
     }
 
     public ReadDestinationDto Update(int id, UpdateDestinationDto destinationDto, IFormFile? photo)
     {
-         var destination = _appDbContext.Destinations.FirstOrDefault(destination => destination.Id == id)
-        ?? throw new Destination.DoesNotExists($"Depoimento {id} não foi localizado");
+        var destination = _appDbContext.Destinations.FirstOrDefault(destination => destination.Id == id)
+       ?? throw new Destination.DoesNotExists($"Destino {id} não foi localizado");
 
         _mapper.Map(destinationDto, destination);
 
-        if(photo != null){
+        if (photo != null)
+        {
             //Remove the old photo
             _fileManager.Remove(destination.Photo);
-            
+
             //Save the new photo
             destination.Photo = _fileManager.SaveFile(BASE_PHOTO_PATH, photo);
         }
 
         _appDbContext.SaveChanges();
 
-        var readDestDto = _mapper.Map<ReadDestinationDto>(destination);   
+        var readDestDto = _mapper.Map<ReadDestinationDto>(destination);
         readDestDto.Photo = this.GetDestinationPhotoEndpointUrl(destination.Id);
 
         return readDestDto;
+    }
+
+    public void Delete(int id)
+    {
+        var destination = _appDbContext.Destinations.FirstOrDefault(dest => dest.Id == id) ??
+        throw new Destination.DoesNotExists($"Destino {id} não localizado");
+
+        _appDbContext.Destinations.Remove(destination);
+        //Remove the destination photo
+        _fileManager.Remove(destination.Photo);
+
+        _appDbContext.SaveChanges();
     }
 }

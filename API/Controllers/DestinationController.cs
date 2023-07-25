@@ -91,5 +91,15 @@ public class DestinationController : ControllerBase
             }
     }
 
-    
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id){
+        try{
+            _destinationService.Delete(id);
+            
+            return NoContent();
+        }
+        catch (Deposition.DoesNotExists err){
+            return NotFound(err.Message);
+        }
+    }
 }
