@@ -38,13 +38,26 @@ public class DestinationController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Register([FromForm]CreateDestinationDto depositionDto, IFormFile photo){
-        var destination = _destinationService.Register(depositionDto, photo);
+    public IActionResult Register([FromForm]CreateDestinationDto destinationDto, IFormFile photo){
+        var destination = _destinationService.Register(destinationDto, photo);
 
          return CreatedAtAction(nameof(GetById),
             new { id = destination.Id },
             destination
         );
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromForm]UpdateDestinationDto destinationDto, IFormFile photo){
+        try{
+            var destination = _destinationService.Update(id, destinationDto, photo);
+
+            return Ok(destination);
+        }
+        catch(Destination.DoesNotExists err){
+            return NotFound(err.Message);   
+        }
+
     }
 
     /// <summary>

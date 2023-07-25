@@ -18,6 +18,7 @@ public class DestinationService : IDestinationService
     private FileManager _fileManager;
     private IUrlHelper _urlHelper;
     private IHttpContextAccessor _httpRequest;
+    private const string BASE_PHOTO_PATH = "destination";
 
     public DestinationService(
         AppDbContext appDbContext,
@@ -107,19 +108,35 @@ public class DestinationService : IDestinationService
     {
         var destination = _mapper.Map<Destination>(destinationDto);
 
-        destination.Photo = _fileManager.SaveFile("destination", photo);
+        destination.Photo = _fileManager.SaveFile(BASE_PHOTO_PATH, photo);
 
         _appDbContext.Destinations.Add(destination);
 
-        _appDbContext.SaveChanges();
-
-        
+        _appDbContext.SaveChanges();        
 
         return _mapper.Map<ReadDestinationDto>(destination);
     }
 
     public ReadDestinationDto Update(int id, UpdateDestinationDto destinationDto, IFormFile? photo)
     {
-        throw new NotImplementedException();
+         var destination = _appDbContext.Destinations.FirstOrDefault(destination => destination.Id == id)
+        ?? throw new Destination.DoesNotExists($"Depoimento {id} não foi localizado");
+
+        _mapper.Map(destinationDto, destination);
+
+        if(photo != null){
+            //Remove the old photo
+            _fileManager.Remove(destination.Photo);
+            
+            //Save the new photo
+            destination.Photo = _fileManager.SaveFile(BASE_PHOTO_PATH, photo);
+        }
+
+        _appDbContext.SaveChanges();
+
+        var readDestDto = _mapper.Map<ReadDestinationDto>(destination);   
+        readDestDto.Photo = this.GetDestinationPhotoEndpointUrl(destination.Id);
+
+        return readDestDto;
     }
 }
