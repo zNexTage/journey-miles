@@ -12,12 +12,10 @@ namespace API.Controllers;
 public class DestinationController : ControllerBase
 {
     private readonly IDestinationService _destinationService;  
-    private readonly FileManager _fileManager; 
     private readonly IWebHostEnvironment _env;
 
-    public DestinationController(IDestinationService destinationService, IWebHostEnvironment webHostEnvironment){
+    public DestinationController(IDestinationService destinationService){
         _destinationService = destinationService;
-        _fileManager = new FileManager(webHostEnvironment);
     }
 
     [HttpGet]
@@ -75,9 +73,7 @@ public class DestinationController : ControllerBase
     {
         try
             {
-                var photoPath = _destinationService.GetPhotoDirectory(id);                
-                
-                var photo = _fileManager.GetPhoto(photoPath);
+                var photo = _destinationService.GetPhoto(id);   
 
                 return File(photo, "image/jpg");
             }

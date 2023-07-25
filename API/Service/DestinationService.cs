@@ -167,4 +167,11 @@ public class DestinationService : IDestinationService
 
         _appDbContext.SaveChanges();
     }
+
+    public FileStream GetPhoto(int id){
+        var destination = _appDbContext.Destinations.FirstOrDefault(destination => destination.Id == id)
+        ?? throw new Destination.DoesNotExists($"Destino {id} não foi localizado");
+
+        return _fileManager.GetPhoto(destination.Photo);
+    }
 }
