@@ -66,7 +66,14 @@ public class DestinationService : IDestinationService
     {
         var destinations = _appDbContext.Destinations.ToList();
 
-        return _mapper.Map<List<ReadDestinationDto>>(destinations);
+        var depositionsDto = _mapper.Map<List<ReadDestinationDto>>(destinations);
+
+        depositionsDto.ForEach(dto => {
+            // we will use the endpoint to serve the photo
+            dto.Photo = this.GetDestinationPhotoEndpointUrl(dto.Id);
+        });
+
+        return depositionsDto;
     }
 
 
@@ -76,9 +83,11 @@ public class DestinationService : IDestinationService
         var destination = _appDbContext.Destinations.FirstOrDefault(destination => destination.Id == id)
         ?? throw new Destination.DoesNotExists($"Depoimento {id} não foi localizado");
 
-        destination.Photo = this.GetDestinationPhotoEndpointUrl(id);
+        var destinationDto = _mapper.Map<ReadDestinationDto>(destination);
 
-        return _mapper.Map<ReadDestinationDto>(destination);
+        destinationDto.Photo = this.GetDestinationPhotoEndpointUrl(id);
+
+        return destinationDto;
     }    
 
     /// <summary>
