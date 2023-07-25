@@ -99,9 +99,7 @@ public class DepositionController : ControllerBase
     {
         try
             {
-                var photoDirectory = _depositionService.GetPhotoDirectory(id);
-                
-                var photo = System.IO.File.OpenRead(photoDirectory);
+                var photo = _depositionService.GetPhoto(id);
 
                 return File(photo, "image/jpg");
             }

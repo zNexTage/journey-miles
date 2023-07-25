@@ -9,8 +9,6 @@ public interface IDepositionService
     IEnumerable<ReadDepositionDto> GetAll();
 
     IEnumerable<ReadDepositionDto> GetRandom();
-    
-    string GetPhotoDirectory(int id);
 
     string SavePhoto(IFormFile photo);
 
@@ -21,4 +19,6 @@ public interface IDepositionService
     ReadDepositionDto Update(int id, UpdateDepositionDto depositionDto, IFormFile? photo);
 
     void Delete(int id);
+
+    FileStream GetPhoto(int id);
 }
