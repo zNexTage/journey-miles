@@ -109,7 +109,10 @@ public class DestinationService : IDestinationService
 
         _appDbContext.SaveChanges();
 
-        return _mapper.Map<ReadDestinationDto>(destination);
+        var readDestDto = _mapper.Map<ReadDestinationDto>(destination);
+        readDestDto.Photo = this.GetDestinationPhotoEndpointUrl(destination.Id);
+
+        return readDestDto;
     }
 
     public ReadDestinationDto Update(int id, UpdateDestinationDto destinationDto, IFormFile? photo)
