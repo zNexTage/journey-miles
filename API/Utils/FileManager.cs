@@ -52,4 +52,8 @@ public class FileManager
     {
         return Guid.NewGuid().ToString() + fileExtesion;
     }
+
+    public FileStream GetPhoto(string path){
+        return System.IO.File.OpenRead(path);
+    }
 }
