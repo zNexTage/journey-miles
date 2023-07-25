@@ -1,0 +1,34 @@
+using System;
+using API.Models;
+using API.Service.Providers;
+using Microsoft.AspNetCore.Mvc;
+
+namespace API.Controllers;
+
+[Route("/api/destinos")]
+[ApiController]
+public class DestinationController : ControllerBase
+{
+    private readonly IDestinationService _destinationService;   
+
+    public DestinationController(IDestinationService destinationService){
+        _destinationService = destinationService;
+    }
+
+    [HttpGet]
+    public IActionResult GetAll(){
+        return Ok(_destinationService.GetAll());
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult GetById(int id){
+        try{
+            var destination = _destinationService.GetById(id);
+
+            return Ok(destination);
+        }
+        catch(Destination.DoesNotExists ex){
+            return NotFound(ex.Message);
+        }
+    }
+}
