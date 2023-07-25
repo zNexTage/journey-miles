@@ -13,4 +13,6 @@ public interface IDestinationService
     ReadDestinationDto Update(int id, UpdateDestinationDto destinationDto, IFormFile? photo);
 
     void Delete(int id);
+
+    string GetPhotoDirectory(int id);
 }

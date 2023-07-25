@@ -1,4 +1,5 @@
-﻿using API.DTO.Deposition;
+﻿using API.Controllers;
+using API.DTO.Deposition;
 using API.DTO.Destination;
 using API.Models;
 using API.Service.Providers;
@@ -35,6 +36,27 @@ public class DestinationService : IDestinationService
         _urlHelper =
             urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
     }
+
+    /// <summary>
+    /// Retorna a URL da foto (endpoint) de um destino.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    private string GetDestinationPhotoEndpointUrl(int id)
+    {
+        var controllerName = nameof(DestinationController).Replace("Controller", string.Empty);
+        var methodName = "GetPhoto";
+
+        var url = _urlHelper.Action(
+                methodName,
+                controllerName,
+                new { id },
+                _httpRequest.HttpContext.Request.Scheme
+        );
+
+        return url;
+    }
+
     public void Delete(int id)
     {
         throw new NotImplementedException();
@@ -47,10 +69,30 @@ public class DestinationService : IDestinationService
         return _mapper.Map<List<ReadDestinationDto>>(destinations);
     }
 
+
+
     public ReadDestinationDto GetById(int id)
     {
-        throw new NotImplementedException();
+        var destination = _appDbContext.Destinations.FirstOrDefault(destination => destination.Id == id)
+        ?? throw new Destination.DoesNotExists($"Depoimento {id} não foi localizado");
+
+        destination.Photo = this.GetDestinationPhotoEndpointUrl(id);
+
+        return _mapper.Map<ReadDestinationDto>(destination);
     }    
+
+    /// <summary>
+    /// Obtém o caminho da foto no diretório
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <exception cref="Destination.DoesNotExists"></exception>
+    public string GetPhotoDirectory(int id){
+        var destination = _appDbContext.Destinations.FirstOrDefault(destination => destination.Id == id)
+        ?? throw new Destination.DoesNotExists($"Depoimento {id} não foi localizado");
+
+        return destination.Photo;
+    }
 
     public ReadDestinationDto Register(CreateDestinationDto destinationDto, IFormFile photo)
     {
@@ -61,6 +103,8 @@ public class DestinationService : IDestinationService
         _appDbContext.Destinations.Add(destination);
 
         _appDbContext.SaveChanges();
+
+        
 
         return _mapper.Map<ReadDestinationDto>(destination);
     }
