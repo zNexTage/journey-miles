@@ -88,11 +88,8 @@ public class DepositionService : IDepositionService
     }
 
     public string SavePhoto(IFormFile photo){
-        var fileExtesion = Path.GetExtension(photo.FileName);
         //Salva a foto no diretório e obtém o caminho.
-        var fileName = GetPhotoFilename(fileExtesion);
-
-        var fullPath = _fileManager.SaveFile(fileName, photo);
+        var fullPath = _fileManager.SaveFile("destinations", photo);
 
         return fullPath;
     }
@@ -109,19 +106,6 @@ public class DepositionService : IDepositionService
         return dto;
     }
 
-    public ReadDepositionDto Register(CreateDepositionDto depositionDto, IFormFile photo)
-    {
-        var fullPath = SavePhoto(photo);
-
-        var deposition = _mapper.Map<Deposition>(depositionDto);
-        deposition.Photo = fullPath;
-
-        _appDbContext.Depositions.Add(deposition);
-        _appDbContext.SaveChanges();
-
-        return _mapper.Map<ReadDepositionDto>(deposition);
-    }
-
     /// <summary>
     /// Obtem o caminho da foto do depoimento salvo no diretório.
     /// </summary>
@@ -135,6 +119,19 @@ public class DepositionService : IDepositionService
         ?? throw new Deposition.DoesNotExists($"Depoimento {id} não foi localizado");
 
         return deposition.Photo;
+    }
+
+    public ReadDepositionDto Register(CreateDepositionDto depositionDto, IFormFile photo)
+    {
+        var fullPath = SavePhoto(photo);
+
+        var deposition = _mapper.Map<Deposition>(depositionDto);
+        deposition.Photo = fullPath;
+
+        _appDbContext.Depositions.Add(deposition);
+        _appDbContext.SaveChanges();
+
+        return _mapper.Map<ReadDepositionDto>(deposition);
     }
 
     public ReadDepositionDto Update(int id, UpdateDepositionDto depositionDto, IFormFile? photo)
@@ -176,4 +173,5 @@ public class DepositionService : IDepositionService
 
         _appDbContext.SaveChanges();
     }
+
 }

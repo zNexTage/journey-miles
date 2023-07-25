@@ -1,4 +1,5 @@
 using System;
+using API.DTO.Destination;
 using API.Models;
 using API.Service.Providers;
 using Microsoft.AspNetCore.Mvc;
@@ -31,4 +32,16 @@ public class DestinationController : ControllerBase
             return NotFound(ex.Message);
         }
     }
+
+    [HttpPost]
+    public IActionResult Register([FromForm]CreateDestinationDto depositionDto, IFormFile photo){
+        var destination = _destinationService.Register(depositionDto, photo);
+
+         return CreatedAtAction(nameof(GetById),
+            new { id = destination.Id },
+            destination
+        );
+    }
+
+    
 }
