@@ -16,4 +16,6 @@ public interface IDestinationService
     void Delete(int id);
 
     string GetPhotoDirectory(int id);
+
+    FileStream GetPhoto(int id);
 }
