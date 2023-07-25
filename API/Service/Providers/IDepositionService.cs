@@ -10,7 +10,7 @@ public interface IDepositionService
 
     IEnumerable<ReadDepositionDto> GetRandom();
     
-    public string GetPhotoDirectory(int id);
+    string GetPhotoDirectory(int id);
 
     string SavePhoto(IFormFile photo);
 
