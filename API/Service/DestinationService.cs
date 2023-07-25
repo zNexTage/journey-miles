@@ -1,5 +1,4 @@
 ﻿using API.Controllers;
-using API.DTO.Deposition;
 using API.DTO.Destination;
 using API.Models;
 using API.Service.Providers;
@@ -8,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.EntityFrameworkCore;
 
 namespace API;
 
@@ -61,6 +61,23 @@ public class DestinationService : IDestinationService
     public IEnumerable<ReadDestinationDto> GetAll()
     {
         var destinations = _appDbContext.Destinations.ToList();
+
+        var depositionsDto = _mapper.Map<List<ReadDestinationDto>>(destinations);
+
+        depositionsDto.ForEach(dto =>
+        {
+            // we will use the endpoint to serve the photo
+            dto.Photo = this.GetDestinationPhotoEndpointUrl(dto.Id);
+        });
+
+        return depositionsDto;
+    }
+
+    public IEnumerable<ReadDestinationDto> GetAll(string name)
+    {   
+        var destinations = _appDbContext.Destinations
+        .Where(dest => EF.Functions.Like(dest.Name, $"%{name}%"))
+        .ToList();
 
         var depositionsDto = _mapper.Map<List<ReadDestinationDto>>(destinations);
 

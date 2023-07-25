@@ -21,8 +21,12 @@ public class DestinationController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll(){
-        return Ok(_destinationService.GetAll());
+    public IActionResult GetAll([FromQuery] string? name){
+        if(string.IsNullOrEmpty(name)){
+            return Ok(_destinationService.GetAll());
+        } 
+
+        return Ok(_destinationService.GetAll(name));
     }
 
     [HttpGet("{id}")]
