@@ -21,9 +21,18 @@ public class FileManager
     /// <param name="filename"></param>
     /// <param name="file"></param>
     /// <returns></returns>
-    public string SaveFile(string filename, IFormFile file)
+    public string SaveFile(string basePath, IFormFile file)
     {
-        var fullpath = Path.Combine(BASE_PATH, filename);
+        var fileExtesion = Path.GetExtension(file.FileName);
+        var filename = GetPhotoFilename(fileExtesion);
+
+        var path = Path.Combine(BASE_PATH, basePath);
+
+        if(!Directory.Exists(path)){
+            Directory.CreateDirectory(path);
+        }
+
+        var fullpath = Path.Combine(path, filename);
 
         using (Stream fileStream = new FileStream(fullpath, FileMode.Create))
         {
@@ -37,5 +46,10 @@ public class FileManager
         if(File.Exists(path)){
             File.Delete(path);
         }
+    }
+
+    private string GetPhotoFilename(string fileExtesion)
+    {
+        return Guid.NewGuid().ToString() + fileExtesion;
     }
 }
