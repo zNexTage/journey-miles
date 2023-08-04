@@ -14,6 +14,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Configuration.AddEnvironmentVariables();
+
+Console.WriteLine(Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING"));
+
 builder.Services.AddDbContext<AppDbContext>();
 
 // Injeção de dependência.
