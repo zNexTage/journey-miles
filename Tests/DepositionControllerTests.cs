@@ -131,7 +131,7 @@ public class DepositionControllerTests
     [Fact]
     public void Post_CreateDeposition(){
         //Assert
-        CreateDepositionDto depositionDto = new CreateDepositionDto(){
+        CreateDepositionDto depositionDto = new(){
             Description = "Descrição",
             PersonName = "Christian"
         };

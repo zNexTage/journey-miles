@@ -9,5 +9,7 @@ public class DestinationProfile : Profile
     public DestinationProfile()
     {
         CreateMap<Destination, ReadDestinationDto>();
+        CreateMap<CreateDestinationDto, Destination>();
+        CreateMap<UpdateDestinationDto, Destination>();
     }
 }

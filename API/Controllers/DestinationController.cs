@@ -1,6 +1,8 @@
 using System;
+using API.DTO.Destination;
 using API.Models;
 using API.Service.Providers;
+using API.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -9,15 +11,20 @@ namespace API.Controllers;
 [ApiController]
 public class DestinationController : ControllerBase
 {
-    private readonly IDestinationService _destinationService;   
+    private readonly IDestinationService _destinationService;  
+    private readonly IWebHostEnvironment _env;
 
     public DestinationController(IDestinationService destinationService){
         _destinationService = destinationService;
     }
 
     [HttpGet]
-    public IActionResult GetAll(){
-        return Ok(_destinationService.GetAll());
+    public IActionResult GetAll([FromQuery] string? name){
+        if(string.IsNullOrEmpty(name)){
+            return Ok(_destinationService.GetAll());
+        } 
+
+        return Ok(_destinationService.GetAll(name));
     }
 
     [HttpGet("{id}")]
@@ -29,6 +36,70 @@ public class DestinationController : ControllerBase
         }
         catch(Destination.DoesNotExists ex){
             return NotFound(ex.Message);
+        }
+    }
+
+    [HttpPost]
+    public IActionResult Register([FromForm]CreateDestinationDto destinationDto, IFormFile photo){
+        var destination = _destinationService.Register(destinationDto, photo);
+
+         return CreatedAtAction(nameof(GetById),
+            new { id = destination.Id },
+            destination
+        );
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromForm]UpdateDestinationDto destinationDto, IFormFile photo){
+        try{
+            var destination = _destinationService.Update(id, destinationDto, photo);
+
+            return Ok(destination);
+        }
+        catch(Destination.DoesNotExists err){
+            return NotFound(err.Message);   
+        }
+
+    }
+
+    /// <summary>
+    /// Retorna a imagem de um destino;
+    /// Ref: https://stackoverflow.com/questions/40794275/return-jpeg-image-from-asp-net-core-webapi
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("foto/{id}")]
+    public IActionResult GetPhoto(int id)
+    {
+        try
+            {
+                var photo = _destinationService.GetPhoto(id);   
+
+                return File(photo, "image/jpg");
+            }
+            catch (Exception err)
+            {
+                if (err is FileNotFoundException || 
+                err is DirectoryNotFoundException || 
+                err is Destination.DoesNotExists)
+                {
+                    return NotFound("Imagem não localizada");
+                }
+
+                return StatusCode(500,
+                new { error = "Ocorreu um erro ao obter a imagem do destino" });
+            }
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id){
+        try{
+            _destinationService.Delete(id);
+            
+            return NoContent();
+        }
+        catch (Deposition.DoesNotExists err){
+            return NotFound(err.Message);
         }
     }
 }

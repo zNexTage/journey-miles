@@ -82,17 +82,9 @@ public class DepositionService : IDepositionService
         return _mapper.Map<List<ReadDepositionDto>>(depositions);
     }
 
-    private string GetPhotoFilename(string fileExtesion)
-    {
-        return Guid.NewGuid().ToString() + fileExtesion;
-    }
-
     public string SavePhoto(IFormFile photo){
-        var fileExtesion = Path.GetExtension(photo.FileName);
         //Salva a foto no diretório e obtém o caminho.
-        var fileName = GetPhotoFilename(fileExtesion);
-
-        var fullPath = _fileManager.SaveFile(fileName, photo);
+        var fullPath = _fileManager.SaveFile("destinations", photo);
 
         return fullPath;
     }
@@ -108,6 +100,7 @@ public class DepositionService : IDepositionService
 
         return dto;
     }
+    
 
     public ReadDepositionDto Register(CreateDepositionDto depositionDto, IFormFile photo)
     {
@@ -120,21 +113,6 @@ public class DepositionService : IDepositionService
         _appDbContext.SaveChanges();
 
         return _mapper.Map<ReadDepositionDto>(deposition);
-    }
-
-    /// <summary>
-    /// Obtem o caminho da foto do depoimento salvo no diretório.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    /// <exception cref="Deposition.DoesNotExists"></exception>
-    public string GetPhotoDirectory(int id)
-    {
-        var deposition = _appDbContext.Depositions
-        .FirstOrDefault(depo => depo.Id == id)
-        ?? throw new Deposition.DoesNotExists($"Depoimento {id} não foi localizado");
-
-        return deposition.Photo;
     }
 
     public ReadDepositionDto Update(int id, UpdateDepositionDto depositionDto, IFormFile? photo)
@@ -176,4 +154,12 @@ public class DepositionService : IDepositionService
 
         _appDbContext.SaveChanges();
     }
+
+    public FileStream GetPhoto(int id){
+        var depositions = _appDbContext.Depositions.FirstOrDefault(depo => depo.Id == id)
+        ?? throw new Deposition.DoesNotExists($"Destino {id} não foi localizado");
+
+        return _fileManager.GetPhoto(depositions.Photo);
+    }
+
 }

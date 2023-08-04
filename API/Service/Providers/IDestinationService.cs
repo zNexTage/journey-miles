@@ -6,6 +6,7 @@ namespace API.Service.Providers;
 public interface IDestinationService
 {
     IEnumerable<ReadDestinationDto> GetAll();
+    IEnumerable<ReadDestinationDto> GetAll(string name);
     ReadDestinationDto GetById(int id);
 
     ReadDestinationDto Register(CreateDestinationDto destinationDto, IFormFile photo);
@@ -13,4 +14,8 @@ public interface IDestinationService
     ReadDestinationDto Update(int id, UpdateDestinationDto destinationDto, IFormFile? photo);
 
     void Delete(int id);
+
+    string GetPhotoDirectory(int id);
+
+    FileStream GetPhoto(int id);
 }

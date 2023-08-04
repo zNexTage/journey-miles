@@ -23,6 +23,7 @@ builder.Services.AddDbContext<AppDbContext>();
 // Injeção de dependência.
 // builder.Services.AddScoped<DepositionService>();
 builder.Services.AddScoped<IDepositionService, DepositionService>();
+builder.Services.AddScoped<IDestinationService, DestinationService>();
 builder.Services.AddScoped<FileManager>();
 
 // Permite acessar UrlHelper nos services;
