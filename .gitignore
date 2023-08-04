@@ -480,3 +480,4 @@ $RECYCLE.BIN/
 
 # Não será versionado as imagens da aplicação.
 media/
+API/localhost.crt
