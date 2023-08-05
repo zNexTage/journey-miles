@@ -1,4 +1,5 @@
-﻿using API.Controllers;
+﻿using API;
+using API.Controllers;
 using API.DTO.Destination;
 using API.Models;
 using API.Service.Providers;
@@ -19,7 +20,7 @@ public class DestinationControllerTests
         {
             Id = 1,
             Name = "Rio de Janeiro",
-            Photo = "rio.png",
+            Photos = new List<string>() {"niteroi.png", "belford_roxo.png"},
             Price = 150
         });
 
@@ -27,7 +28,7 @@ public class DestinationControllerTests
         {
             Id = 2,
             Name = "São Paulo",
-            Photo = "sp.png",
+            Photos = new List<string> () {"liberdade.png", "paulista.png"},
             Price = 200
         });
 
@@ -35,7 +36,7 @@ public class DestinationControllerTests
         {
             Id = 3,
             Name = "Ceará",
-            Photo = "ceara.png",
+            Photos = new List<string>(){"lavras_da_mangabeira.png", "cascavel.png"},
             Price = 444
         });
 
@@ -65,7 +66,7 @@ public class DestinationControllerTests
         mockService.Setup(service => service.GetById(1)).Returns(new ReadDestinationDto() {
             Id = 1,
             Name = "São Paulo",
-            Photo = "https://localhost:4717/sp.png",
+            Photos = new List<string>(){"https://localhost:4717/sp.png", "https://localhost:4717/sp_2.png"},
             Price = 150
         });
 
@@ -106,21 +107,22 @@ public class DestinationControllerTests
 
         fileMock.Setup(file=> file.FileName).Returns("sp.png");
         fileMock.Setup(file=> file.Length).Returns(100);
+        
 
         var expectedReturn = new ReadDestinationDto(){
             Name = "Descrição",
             Price = 150,
-            Photo = "sp.png"
+            Photos = new List<string>() {"sp.png"}
         };
 
         Mock<IDestinationService> mockService = new();
-        mockService.Setup(service => service.Register(depositionDto, fileMock.Object))
+        mockService.Setup(service => service.Register(depositionDto, new List<IFormFile>(){fileMock.Object}))
         .Returns(expectedReturn);
 
         //Act
         var controller = new DestinationController(mockService.Object);
 
-        var result = (CreatedAtActionResult)controller.Register(depositionDto, fileMock.Object);
+        var result = (CreatedAtActionResult)controller.Register(depositionDto, new List<IFormFile>(){fileMock.Object});
 
         //Arrange
         Assert.True(result.StatusCode == 201);
@@ -172,7 +174,7 @@ public class DestinationControllerTests
         fileMock.Setup(file=> file.Length).Returns(100);
 
         Mock<IDestinationService> mockService = new();
-        mockService.Setup(service => service.Update(1, updateDestinationDto, fileMock.Object))
+        mockService.Setup(service => service.Update(1, updateDestinationDto, new List<IFormFile>(){fileMock.Object}))
         .Returns(new ReadDestinationDto() {
             Name = "São Paulo - Itu",
             Price = 200
@@ -181,7 +183,7 @@ public class DestinationControllerTests
         var controller = new DestinationController(mockService.Object);
 
         // Act
-        var result = (OkObjectResult)controller.Update(1, updateDestinationDto, fileMock.Object);
+        var result = (OkObjectResult)controller.Update(1, updateDestinationDto, new List<IFormFile>(){fileMock.Object});
 
         // Assert
         Assert.True(result.StatusCode == 200);
@@ -204,13 +206,13 @@ public class DestinationControllerTests
         fileMock.Setup(file=> file.Length).Returns(100);
 
         Mock<IDestinationService> mockService = new();
-        mockService.Setup(service => service.Update(1, updateDestinationDto, fileMock.Object))
-        .Throws(new Destination.DoesNotExists("Destino 1 não localizado"));
+        mockService.Setup(service => service.Update(1, updateDestinationDto, new List<IFormFile>(){fileMock.Object}))
+        .Throws(new Photos.DoesNotExists("Destino 1 não localizado"));
 
         var controller = new DestinationController(mockService.Object);
 
         // Act
-        var result = (NotFoundObjectResult)controller.Update(1, updateDestinationDto, fileMock.Object);
+        var result = (NotFoundObjectResult)controller.Update(1, updateDestinationDto, new List<IFormFile>(){fileMock.Object});
 
         // Assert
         Assert.True(result.StatusCode == 404);
