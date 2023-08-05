@@ -16,10 +16,6 @@ public class Destination : BaseModel
     [DataType(DataType.Currency)]
     public double Price { get; set; }
 
-    [Required(ErrorMessage = "Informe a foto do destino")]
-    [MaxLength(500)]
-    public string Photo { get; set; }    
-
     [Required(ErrorMessage = "Informe o campo Meta")]
     [MaxLength(160)]
     public string Meta { get; set; }
