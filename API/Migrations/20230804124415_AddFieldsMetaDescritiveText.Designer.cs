@@ -2,6 +2,7 @@
 using API;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230804124415_AddFieldsMetaDescritiveText")]
+    partial class AddFieldsMetaDescritiveText
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,43 +81,6 @@ namespace API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Destinations");
-                });
-
-            modelBuilder.Entity("API.Photos", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("DestinationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Photo")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DestinationId");
-
-                    b.ToTable("Photos");
-                });
-
-            modelBuilder.Entity("API.Photos", b =>
-                {
-                    b.HasOne("API.Models.Destination", "Destination")
-                        .WithMany("Photos")
-                        .HasForeignKey("DestinationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Destination");
-                });
-
-            modelBuilder.Entity("API.Models.Destination", b =>
-                {
-                    b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
         }
