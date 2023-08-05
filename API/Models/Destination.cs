@@ -23,6 +23,6 @@ public class Destination : BaseModel
     [MaxLength(100)]
     public string DescritiveText { get; set; }
 
-    public virtual List<Photos> Photos { get; set; }
+    public virtual ICollection<Photos> Photos { get; set; } = new List<Photos>();
 
 }

@@ -2,7 +2,6 @@ using System;
 using API.DTO.Destination;
 using API.Models;
 using API.Service.Providers;
-using API.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -40,8 +39,8 @@ public class DestinationController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Register([FromForm]CreateDestinationDto destinationDto, IFormFile photo){
-        var destination = _destinationService.Register(destinationDto, photo);
+    public IActionResult Register([FromForm]CreateDestinationDto destinationDto, List<IFormFile> photos){
+        var destination = _destinationService.Register(destinationDto, photos);
 
          return CreatedAtAction(nameof(GetById),
             new { id = destination.Id },
@@ -50,9 +49,9 @@ public class DestinationController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromForm]UpdateDestinationDto destinationDto, IFormFile photo){
+    public IActionResult Update(int id, [FromForm]UpdateDestinationDto destinationDto, List<IFormFile>? photos){
         try{
-            var destination = _destinationService.Update(id, destinationDto, photo);
+            var destination = _destinationService.Update(id, destinationDto, photos);
 
             return Ok(destination);
         }
@@ -68,12 +67,12 @@ public class DestinationController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("foto/{id}")]
-    public IActionResult GetPhoto(int id)
+    [HttpGet("{destinationId}/foto/{photoId}")]
+    public IActionResult GetPhoto(int destinationId, int photoId)
     {
         try
             {
-                var photo = _destinationService.GetPhoto(id);   
+                var photo = _destinationService.GetPhoto(destinationId, photoId);   
 
                 return File(photo, "image/jpg");
             }
@@ -81,7 +80,7 @@ public class DestinationController : ControllerBase
             {
                 if (err is FileNotFoundException || 
                 err is DirectoryNotFoundException || 
-                err is Destination.DoesNotExists)
+                err is Photos.DoesNotExists)
                 {
                     return NotFound("Imagem não localizada");
                 }

@@ -9,13 +9,13 @@ public interface IDestinationService
     IEnumerable<ReadDestinationDto> GetAll(string name);
     ReadDestinationDto GetById(int id);
 
-    ReadDestinationDto Register(CreateDestinationDto destinationDto, IFormFile photo);
+    ReadDestinationDto Register(CreateDestinationDto destinationDto, List<IFormFile> photos);
 
-    ReadDestinationDto Update(int id, UpdateDestinationDto destinationDto, IFormFile? photo);
+    ReadDestinationDto Update(int id, UpdateDestinationDto destinationDto, List<IFormFile>? photos);
 
     void Delete(int id);
 
-    string GetPhotoDirectory(int id);
+    List<string> GetPhotosDirectory(int id);
 
-    FileStream GetPhoto(int id);
+    FileStream GetPhoto(int destinatioId, int photoId);
 }

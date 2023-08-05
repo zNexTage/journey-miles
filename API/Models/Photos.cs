@@ -3,7 +3,7 @@ using API.Models;
 
 namespace API;
 
-public class Photos
+public class Photos : BaseModel
 {
     [Required]
     [Key]
