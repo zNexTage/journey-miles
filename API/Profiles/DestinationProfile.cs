@@ -8,7 +8,9 @@ public class DestinationProfile : Profile
 {
     public DestinationProfile()
     {
-        CreateMap<Destination, ReadDestinationDto>();
+        CreateMap<Destination, ReadDestinationDto>()
+        .ForMember(dest => dest.Photos, opt => opt.Ignore());
+        
         CreateMap<CreateDestinationDto, Destination>();
         CreateMap<UpdateDestinationDto, Destination>();
     }

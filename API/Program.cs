@@ -1,4 +1,5 @@
 using API;
+using API.ExternalServices;
 using API.Service;
 using API.Service.Providers;
 using API.Utils;
@@ -14,6 +15,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Configuration.AddEnvironmentVariables();
+
+Console.WriteLine(Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING"));
+
 builder.Services.AddDbContext<AppDbContext>();
 
 // Injeção de dependência.
@@ -21,6 +26,7 @@ builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddScoped<IDepositionService, DepositionService>();
 builder.Services.AddScoped<IDestinationService, DestinationService>();
 builder.Services.AddScoped<FileManager>();
+builder.Services.AddScoped<ChatBotService>(_ => new (builder.Configuration["GPTApiKey"]));
 
 // Permite acessar UrlHelper nos services;
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
