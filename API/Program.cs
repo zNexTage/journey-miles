@@ -26,7 +26,7 @@ builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddScoped<IDepositionService, DepositionService>();
 builder.Services.AddScoped<IDestinationService, DestinationService>();
 builder.Services.AddScoped<FileManager>();
-builder.Services.AddScoped<ChatBotService>(_ => new (builder.Configuration["GPTApiKey"]));
+builder.Services.AddScoped<ChatBotService>(_ => new (builder.Configuration["GPTApiKey"], builder.Configuration["GPTOrganizationKey"]));
 
 // Permite acessar UrlHelper nos services;
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

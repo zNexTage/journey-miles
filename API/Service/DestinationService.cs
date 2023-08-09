@@ -141,7 +141,9 @@ public class DestinationService : IDestinationService
         if (string.IsNullOrEmpty(destination.DescritiveText))
         {
             //TODO: Save GPT answer in destination.DescritiveText
-            var result = await _openAIService.SendMessage($"Faça um resumo sobre {destination.Name} enfatizando o porque este lugar é incrível. Utilize uma linguagem informal e até 100 caracteres no máximo em cada parágrafo. Crie 2 parágrafos neste resumo.");
+            var answer = await _openAIService.SendMessage($"Faça pequeno um resumo sobre {destination.Name} enfatizando o porque este lugar é incrível utilizando no máximo {ChatBotService.GPT_MAX_CHAR_ANSWER} caracteres.");
+
+            destination.DescritiveText = answer;
         }
 
         foreach (var photoFile in photos)
