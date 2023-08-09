@@ -18,5 +18,5 @@ public class CreateDestinationDto
     public string Meta { get; set; }
 
     [MaxLength(100)]
-    public string DescritiveText { get; set; }
+    public string? DescritiveText { get; set; }
 }
