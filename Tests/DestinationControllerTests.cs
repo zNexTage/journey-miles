@@ -96,7 +96,7 @@ public class DestinationControllerTests
     }
 
     [Fact]
-    public void Post_CreateDestination(){
+    public async void Post_CreateDestination(){
         //Arrange
         CreateDestinationDto depositionDto = new(){
             Name = "São Paulo",
@@ -117,12 +117,12 @@ public class DestinationControllerTests
 
         Mock<IDestinationService> mockService = new();
         mockService.Setup(service => service.Register(depositionDto, new List<IFormFile>(){fileMock.Object}))
-        .Returns(expectedReturn);
+        .Returns(Task.FromResult(expectedReturn));
 
         //Act
         var controller = new DestinationController(mockService.Object);
 
-        var result = (CreatedAtActionResult)controller.Register(depositionDto, new List<IFormFile>(){fileMock.Object});
+        var result = (CreatedAtActionResult)await controller.Register(depositionDto, new List<IFormFile>(){fileMock.Object});
 
         //Arrange
         Assert.True(result.StatusCode == 201);

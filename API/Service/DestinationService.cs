@@ -1,5 +1,6 @@
 ﻿using API.Controllers;
 using API.DTO.Destination;
+using API.ExternalServices;
 using API.Models;
 using API.Service.Providers;
 using API.Utils;
@@ -19,6 +20,7 @@ public class DestinationService : IDestinationService
     private IUrlHelper _urlHelper;
     private IHttpContextAccessor _httpRequest;
     private const string BASE_PHOTO_PATH = "destination";
+    private ChatBotService _openAIService;
 
     public DestinationService(
         AppDbContext appDbContext,
@@ -26,13 +28,15 @@ public class DestinationService : IDestinationService
         IWebHostEnvironment environment,
         IUrlHelperFactory urlHelperFactory,
         IActionContextAccessor actionContextAccessor,
-        IHttpContextAccessor httpContextAccessor
+        IHttpContextAccessor httpContextAccessor,
+        ChatBotService openAIService
     )
     {
         _appDbContext = appDbContext;
         _mapper = mapper;
         _fileManager = new FileManager(environment);
         _httpRequest = httpContextAccessor;
+        _openAIService = openAIService;
 
         _urlHelper =
             urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
@@ -58,18 +62,21 @@ public class DestinationService : IDestinationService
         return url;
     }
 
-    private IEnumerable<ReadDestinationDto> DestinationsToDto(IEnumerable<Destination> destinations) {
+    private IEnumerable<ReadDestinationDto> DestinationsToDto(IEnumerable<Destination> destinations)
+    {
         List<ReadDestinationDto> destinationDtos = new();
 
-        foreach(var dest in destinations){
-            var destDto =  _mapper.Map<ReadDestinationDto>(dest);
+        foreach (var dest in destinations)
+        {
+            var destDto = _mapper.Map<ReadDestinationDto>(dest);
             destDto.Photos = new List<string>();
-            foreach(var photo in dest.Photos){
+            foreach (var photo in dest.Photos)
+            {
                 destDto.Photos.Add(this.GetDestinationPhotoEndpointUrl(dest.Id, photo.Id));
             }
 
             destinationDtos.Add(destDto);
-        }        
+        }
 
         return destinationDtos;
     }
@@ -85,7 +92,7 @@ public class DestinationService : IDestinationService
     {
         var destinations = _appDbContext.Destinations
         .Where(dest => EF.Functions.Like(dest.Name, $"%{name}%"))
-        .ToList();    
+        .ToList();
 
         return this.DestinationsToDto(destinations);
     }
@@ -97,7 +104,8 @@ public class DestinationService : IDestinationService
 
         var destinationDto = _mapper.Map<ReadDestinationDto>(destination);
 
-        foreach(var photo in destination.Photos){
+        foreach (var photo in destination.Photos)
+        {
 
             destinationDto.Photos.Add(this.GetDestinationPhotoEndpointUrl(destination.Id, photo.Id));
         }
@@ -118,16 +126,23 @@ public class DestinationService : IDestinationService
 
         List<string> photosDirectory = new();
 
-        foreach(var photoFile in destination.Photos){
+        foreach (var photoFile in destination.Photos)
+        {
             photosDirectory.Add(photoFile.Photo);
         }
 
         return photosDirectory;
     }
 
-    public ReadDestinationDto Register(CreateDestinationDto destinationDto, List<IFormFile> photos)
+    public async Task<ReadDestinationDto> Register(CreateDestinationDto destinationDto, List<IFormFile> photos)
     {
-        var destination = _mapper.Map<Destination>(destinationDto);                        
+        var destination = _mapper.Map<Destination>(destinationDto);
+
+        if (string.IsNullOrEmpty(destination.DescritiveText))
+        {
+            //TODO: Save GPT answer in destination.DescritiveText
+            var result = await _openAIService.SendMessage($"Faça um resumo sobre {destination.Name} enfatizando o porque este lugar é incrível. Utilize uma linguagem informal e até 100 caracteres no máximo em cada parágrafo. Crie 2 parágrafos neste resumo.");
+        }
 
         foreach (var photoFile in photos)
         {
@@ -141,13 +156,14 @@ public class DestinationService : IDestinationService
             destination.Photos.Add(photo);
         }
 
-        _appDbContext.Destinations.Add(destination); 
+        _appDbContext.Destinations.Add(destination);
 
-        _appDbContext.SaveChanges();               
+        _appDbContext.SaveChanges();
 
         var readDestDto = _mapper.Map<ReadDestinationDto>(destination);
 
-        foreach(var photo in destination.Photos){
+        foreach (var photo in destination.Photos)
+        {
 
             readDestDto.Photos.Add(this.GetDestinationPhotoEndpointUrl(destination.Id, photo.Id));
         }
@@ -171,7 +187,7 @@ public class DestinationService : IDestinationService
 
                 _fileManager.Remove(destPhoto.Photo);
             }
-            
+
             // Save the new files
             foreach (var photoFile in photos)
             {
@@ -189,7 +205,8 @@ public class DestinationService : IDestinationService
 
         var readDestDto = _mapper.Map<ReadDestinationDto>(destination);
 
-        foreach(var photo in destination.Photos){
+        foreach (var photo in destination.Photos)
+        {
 
             readDestDto.Photos.Add(this.GetDestinationPhotoEndpointUrl(destination.Id, photo.Id));
         }
@@ -204,7 +221,8 @@ public class DestinationService : IDestinationService
 
         _appDbContext.Destinations.Remove(destination);
 
-        foreach(var photoFile in destination.Photos){
+        foreach (var photoFile in destination.Photos)
+        {
             //Remove the destination photo
             _appDbContext.Photos.Remove(photoFile);
 
@@ -216,7 +234,7 @@ public class DestinationService : IDestinationService
 
     public FileStream GetPhoto(int destinatioId, int photoId)
     {
-        var photo = _appDbContext.Photos.FirstOrDefault(photo => photo.Id == photoId && photo.DestinationId == destinatioId) ?? 
+        var photo = _appDbContext.Photos.FirstOrDefault(photo => photo.Id == photoId && photo.DestinationId == destinatioId) ??
         throw new Photos.DoesNotExists($"Foto {photoId} não localizada");
 
         return _fileManager.GetPhoto(photo.Photo);

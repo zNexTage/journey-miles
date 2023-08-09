@@ -9,7 +9,7 @@ public interface IDestinationService
     IEnumerable<ReadDestinationDto> GetAll(string name);
     ReadDestinationDto GetById(int id);
 
-    ReadDestinationDto Register(CreateDestinationDto destinationDto, List<IFormFile> photos);
+    Task<ReadDestinationDto> Register(CreateDestinationDto destinationDto, List<IFormFile> photos);
 
     ReadDestinationDto Update(int id, UpdateDestinationDto destinationDto, List<IFormFile>? photos);
 

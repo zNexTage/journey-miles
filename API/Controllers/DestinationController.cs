@@ -39,8 +39,8 @@ public class DestinationController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Register([FromForm]CreateDestinationDto destinationDto, List<IFormFile> photos){
-        var destination = _destinationService.Register(destinationDto, photos);
+    public async Task<IActionResult> Register([FromForm]CreateDestinationDto destinationDto, List<IFormFile> photos){
+        var destination = await _destinationService.Register(destinationDto, photos);
 
          return CreatedAtAction(nameof(GetById),
             new { id = destination.Id },
