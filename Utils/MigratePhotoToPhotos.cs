@@ -3,6 +3,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Utils;
 
+/// <summary>
+/// script used to migrate the photos that were saved through the photo field to the new photos field.
+/// </summary>
 public class MigratePhotoToPhotos
 {
     public static void Execute(IConfiguration configuration)
