@@ -24,8 +24,12 @@ public class AppDbContext : DbContext
     public DbSet<Photos> Photos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var connectionString = _configuration.GetConnectionString("Mysql");
+    {        
+        var connectionString = _configuration["ConnectionStrings:Mysql"];
+
+        if(string.IsNullOrEmpty(connectionString)){
+            throw new ArgumentNullException(connectionString, "Must inform the Mysql connection string in user-secrets");
+        }
 
         optionsBuilder
         .UseLazyLoadingProxies()

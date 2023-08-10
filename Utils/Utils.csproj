@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\API\API.csproj" />
@@ -9,6 +9,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>2e3db6f6-bc05-43ea-8e0f-cd7f13ffe446</UserSecretsId>
   </PropertyGroup>
 
 </Project>
