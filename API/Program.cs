@@ -1,3 +1,4 @@
+using System.Reflection;
 using API;
 using API.ExternalServices;
 using API.Service;
@@ -17,7 +18,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Configuration.AddEnvironmentVariables();
 
-Console.WriteLine(Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING"));
+builder.Services.AddSwaggerGen(c =>
+{
+  c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, 
+  $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+});
 
 builder.Services.AddDbContext<AppDbContext>();
 

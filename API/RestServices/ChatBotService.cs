@@ -35,7 +35,12 @@ public class ChatBotService
     public async Task<string> SendMessage(string message)
     {
         _conversation.AppendUserInput(message);
-        string response = await _conversation.GetResponseFromChatbotAsync();
+
+        string response = "";
+
+        do{
+            response = await _conversation.GetResponseFromChatbotAsync();
+        } while(response.Length > GPT_MAX_CHAR_ANSWER);
         
         return response;   
     }

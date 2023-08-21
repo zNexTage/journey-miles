@@ -5,6 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>e0aa11d8-7dbb-4936-8f4b-0d9f355fe1c2</UserSecretsId>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.8" />
      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.9">
