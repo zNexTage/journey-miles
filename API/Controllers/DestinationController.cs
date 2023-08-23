@@ -17,6 +17,11 @@ public class DestinationController : ControllerBase
         _destinationService = destinationService;
     }
 
+    /// <summary>
+    /// Get all destinations
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     [HttpGet]
     public IActionResult GetAll([FromQuery] string? name){
         if(string.IsNullOrEmpty(name)){
@@ -26,6 +31,11 @@ public class DestinationController : ControllerBase
         return Ok(_destinationService.GetAll(name));
     }
 
+    /// <summary>
+    /// Get a destination by id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id}")]
     public IActionResult GetById(int id){
         try{
@@ -38,6 +48,12 @@ public class DestinationController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Register a destination in database
+    /// </summary>
+    /// <param name="destinationDto"></param>
+    /// <param name="photos"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> Register([FromForm]CreateDestinationDto destinationDto, List<IFormFile> photos){
         var destination = await _destinationService.Register(destinationDto, photos);
@@ -48,6 +64,13 @@ public class DestinationController : ControllerBase
         );
     }
 
+    /// <summary>
+    /// Update a specific deposition
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="destinationDto"></param>
+    /// <param name="photos"></param>
+    /// <returns></returns>
     [HttpPut("{id}")]
     public IActionResult Update(int id, [FromForm]UpdateDestinationDto destinationDto, List<IFormFile>? photos){
         try{
@@ -62,7 +85,7 @@ public class DestinationController : ControllerBase
     }
 
     /// <summary>
-    /// Retorna a imagem de um destino;
+    /// Get a destination image.
     /// Ref: https://stackoverflow.com/questions/40794275/return-jpeg-image-from-asp-net-core-webapi
     /// </summary>
     /// <param name="id"></param>
@@ -90,6 +113,11 @@ public class DestinationController : ControllerBase
             }
     }
 
+    /// <summary>
+    /// Remove a deposition.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete("{id}")]
     public IActionResult Delete(int id){
         try{

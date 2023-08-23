@@ -18,6 +18,12 @@ public class DepositionController : ControllerBase
         _depositionService = depositionService;
     }
 
+    /// <summary>
+    /// Validate and register a Deposition 
+    /// </summary>
+    /// <param name="depositionDto"></param>
+    /// <param name="photo"></param>
+    /// <returns></returns>
     [HttpPost]
     public IActionResult Create([FromForm] CreateDepositionDto depositionDto, IFormFile photo)
     {
@@ -29,6 +35,10 @@ public class DepositionController : ControllerBase
         );
     }
 
+    /// <summary>
+    /// Get all deposition saved in database
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public IActionResult GetAll()
     {
@@ -38,7 +48,7 @@ public class DepositionController : ControllerBase
     }
 
     /// <summary>
-    /// Obtém três depoimentos aleatóriamente
+    /// Get three random deposition
     /// </summary>
     /// <returns></returns>
     [HttpGet("home/")]
@@ -46,6 +56,11 @@ public class DepositionController : ControllerBase
         return Ok(_depositionService.GetRandom());
     }
 
+    /// <summary>
+    /// Get a deposition by id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
@@ -61,6 +76,13 @@ public class DepositionController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Update a specific deposition. When a picture is send in request, the photo saved will replace the older.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="depositionDto"></param>
+    /// <param name="photo"></param>
+    /// <returns></returns>
     [HttpPut("{id}")]
     public IActionResult Update(int id, [FromForm] UpdateDepositionDto depositionDto, IFormFile? photo)
     {
@@ -75,6 +97,11 @@ public class DepositionController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Remove a specific deposition using the id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
@@ -89,7 +116,7 @@ public class DepositionController : ControllerBase
     }
 
     /// <summary>
-    /// Retorna a imagem de um depoimento;
+    /// Serve a deposition image
     /// Ref: https://stackoverflow.com/questions/40794275/return-jpeg-image-from-asp-net-core-webapi
     /// </summary>
     /// <param name="id"></param>
