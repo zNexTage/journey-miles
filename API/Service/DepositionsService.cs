@@ -112,7 +112,10 @@ public class DepositionService : IDepositionService
         _appDbContext.Depositions.Add(deposition);
         _appDbContext.SaveChanges();
 
-        return _mapper.Map<ReadDepositionDto>(deposition);
+        var readDepoDto = _mapper.Map<ReadDepositionDto>(deposition);
+        readDepoDto.Photo = this.GetDepositionPhotoEndpointUrl(deposition.Id);
+
+        return readDepoDto;
     }
 
     public ReadDepositionDto Update(int id, UpdateDepositionDto depositionDto, IFormFile? photo)
