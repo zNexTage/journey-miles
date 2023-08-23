@@ -140,7 +140,6 @@ public class DestinationService : IDestinationService
 
         if (string.IsNullOrEmpty(destination.DescritiveText))
         {
-            //TODO: Save GPT answer in destination.DescritiveText
             var answer = await _openAIService.SendMessage($"Faça pequeno um resumo sobre {destination.Name} enfatizando o porque este lugar é incrível utilizando no máximo {ChatBotService.GPT_MAX_CHAR_ANSWER} caracteres.");
 
             destination.DescritiveText = answer;
